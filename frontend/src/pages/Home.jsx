@@ -1,4 +1,4 @@
-
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BarChart3,
@@ -95,9 +95,11 @@ export default function Home() {
 
           <div className="hidden items-center gap-3 sm:flex">
 
-            <button className="rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-orange-50 hover:text-orange-600">
-              Login
-            </button>
+            <Link
+            to="/admin/login"
+            className="rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-orange-50 hover:text-orange-600">
+            Login
+            </Link>
 
             <button className="rounded-lg bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700">
               Get Started
@@ -248,7 +250,7 @@ export default function Home() {
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
 
-                <button className="group flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-orange-600/20 transition hover:bg-orange-700">
+                <button className="group flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-orange-600/20 transition hover:bg-orange-700">
 
                   Explore ChitNova
 
