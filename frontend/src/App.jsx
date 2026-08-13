@@ -1,94 +1,44 @@
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import Customers from "./pages/admin/Customers";
-
+// Layout
 import AdminLayout from "./layouts/AdminLayout";
+import Home from "./pages/Home";
+import AdminLogin from "./pages/admin/AdminLogin";
+
+// Admin Pages
+import Dashboard from "./pages/admin/AdminDashboard"; // or "./pages/admin/Dashboard" depending on your exact filename
+import Customers from "./pages/admin/Customers";
 import Agents from "./pages/admin/Agents";
 import ChitGroups from "./pages/admin/ChitGroups";
+import Enrollments from "./pages/admin/Enrollments";
 import Collections from "./pages/admin/Collections";
+import Auctions from "./pages/admin/Auctions";
 import Reports from "./pages/admin/Reports";
-import Documents from "./pages/admin/Documents";
 import Settings from "./pages/admin/Settings";
 
 export default function App() {
   return (
     <BrowserRouter>
-
       <Routes>
-
-        {/* =================================
-            PUBLIC WEBSITE
-        ================================= */}
-
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-
-        {/* =================================
-            ADMIN LOGIN
-        ================================= */}
-
-        <Route
-          path="/admin/login"
-          element={<AdminLogin />}
-        />
-
-
-        {/* =================================
-            ADMIN ERP LAYOUT
-        ================================= */}
-
-        <Route element={<AdminLayout />}>
-
-          <Route
-            path="/admin/dashboard"
-            element={<AdminDashboard />}
-          />
-
-          <Route
-            path="/admin/customers"
-            element={<Customers />}
-          />
-          <Route
-           path="/admin/agents"
-          element={<Agents />}
-          />
-
-          <Route
-          path="/admin/chit-groups"
-          element={<ChitGroups />}
-        />
-
-          <Route
-           path="/admin/collections"
-          element={<Collections />}
-          />
-
-          <Route
-           path="/admin/reports"
-           element={<Reports />}
-          />
-
-          <Route
-           path="/admin/documents"
-           element={<Documents />}
-          />
-
-          <Route
-          path="/admin/settings"
-          element={<Settings />}
-          />
-
+        <Route path="/" element={<Home />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          {/* Default Route redirects to Dashboard */}
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          
+          {/* Other Admin Routes */}
+          <Route path="customers" element={<Customers />} />
+          <Route path="agents" element={<Agents />} />
+          <Route path="chit-groups" element={<ChitGroups />} />
+          <Route path="enrollments" element={<Enrollments />} />
+          <Route path="collections" element={<Collections />} />
+          <Route path="auctions" element={<Auctions />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
-
       </Routes>
-
     </BrowserRouter>
   );
 }
