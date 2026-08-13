@@ -1,253 +1,99 @@
-import {
-  Users,
-  WalletCards,
-  Gavel,
-  TrendingUp,
-  ArrowUpRight,
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Users, UserCheck, PiggyBank, Gavel, ArrowUpRight, Loader2 } from "lucide-react";
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalCustomers: 0,
+    activeAgents: 0,
+    activeChits: 0,
+    totalAuctions: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("http://localhost:5000/api/dashboard/stats");
+      if (res.data.success) {
+        setStats(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to load dashboard metrics", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-slate-50 p-4 sm:p-6 lg:p-8">
-
-      {/* =========================================
-          HEADER
-      ========================================= */}
-
-      <div className="mb-7">
-
-        <p className="text-sm font-semibold text-orange-600">
-          ChitNova Admin ERP
+    <div className="p-6 bg-slate-50 min-h-screen">
+      {/* Title */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <p className="text-sm text-slate-500">
+          Welcome to ChitNova Financial Engine.
         </p>
-
-        <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">
-          Dashboard
-        </h1>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Monitor your chit fund operations from one place.
-        </p>
-
       </div>
 
-
-      {/* =========================================
-          SUMMARY CARDS
-      ========================================= */}
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-        <DashboardCard
+      {/* KPI Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-8">
+        <StatCard
           title="Total Customers"
-          value="2,480"
-          icon={<Users size={21} />}
+          value={loading ? "..." : stats.totalCustomers.toLocaleString()}
+          icon={<Users className="w-5 h-5 text-orange-600" />}
         />
-
-        <DashboardCard
-          title="Total Collection"
-          value="₹24.8 L"
-          icon={<WalletCards size={21} />}
+        <StatCard
+          title="Active Agents"
+          value={loading ? "..." : stats.activeAgents.toLocaleString()}
+          icon={<UserCheck className="w-5 h-5 text-orange-600" />}
         />
-
-        <DashboardCard
+        <StatCard
           title="Active Chit Groups"
-          value="36"
-          icon={<Gavel size={21} />}
+          value={loading ? "..." : stats.activeChits.toLocaleString()}
+          icon={<PiggyBank className="w-5 h-5 text-orange-600" />}
         />
-
-        <DashboardCard
-          title="Monthly Growth"
-          value="12.8%"
-          icon={<TrendingUp size={21} />}
-          success
+        <StatCard
+          title="Auctions Hosted"
+          value={loading ? "..." : stats.totalAuctions.toLocaleString()}
+          icon={<Gavel className="w-5 h-5 text-orange-600" />}
         />
-
       </div>
 
-
-      {/* =========================================
-          MAIN CONTENT
-      ========================================= */}
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-3">
-
-        {/* Collection Overview */}
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 xl:col-span-2">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <h2 className="font-bold text-slate-900">
-                Collection Overview
-              </h2>
-
-              <p className="mt-1 text-sm text-slate-500">
-                Monthly collection performance
-              </p>
-
-            </div>
-
-            <button className="flex items-center gap-1 text-sm font-semibold text-orange-600">
-              View Report
-              <ArrowUpRight size={16} />
-            </button>
-
-          </div>
-
-
-          {/* Simple chart area */}
-
-          <div className="mt-8 flex h-64 items-end gap-3">
-
-            {[45, 60, 50, 72, 65, 82, 70, 90, 76, 88, 94, 82].map(
-              (height, index) => (
-                <div
-                  key={index}
-                  className="flex flex-1 flex-col items-center justify-end gap-2"
-                >
-
-                  <div
-                    className="w-full rounded-t-lg bg-orange-500 transition hover:bg-orange-600"
-                    style={{
-                      height: `${height}%`,
-                    }}
-                  />
-
-                  <span className="text-[10px] text-slate-400">
-                    {index + 1}
-                  </span>
-
-                </div>
-              )
-            )}
-
-          </div>
-
-        </div>
-
-
-        {/* Today's Activity */}
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
-
-          <h2 className="font-bold text-slate-900">
-            Today's Activity
+      {/* Overview Box */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex justify-between items-center">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">
+            System Performance Overview
           </h2>
-
-          <p className="mt-1 text-sm text-slate-500">
-            Latest system activity
+          <p className="text-sm text-slate-500">
+            Navigate using the sidebar to manage Collections, Auctions, Reports, and Settings.
           </p>
-
-
-          <div className="mt-6 space-y-5">
-
-            <Activity
-              title="New customer registered"
-              description="Arun Kumar joined CN-1001"
-              time="10 min ago"
-            />
-
-            <Activity
-              title="Payment received"
-              description="₹25,000 installment collected"
-              time="28 min ago"
-            />
-
-            <Activity
-              title="KYC verified"
-              description="Customer CUS002 verified"
-              time="1 hour ago"
-            />
-
-            <Activity
-              title="Auction completed"
-              description="Chit Group CN-1005"
-              time="2 hours ago"
-            />
-
-          </div>
-
         </div>
-
+        {loading && <Loader2 className="w-5 h-5 text-orange-600 animate-spin" />}
       </div>
-
-    </main>
-  );
-}
-
-
-/* =========================================
-   DASHBOARD CARD
-========================================= */
-
-function DashboardCard({
-  title,
-  value,
-  icon,
-  success = false,
-}) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
-
-      <div className="flex items-center justify-between">
-
-        <p className="text-sm font-medium text-slate-500">
-          {title}
-        </p>
-
-        <div
-          className={
-            success
-              ? "flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"
-              : "flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600"
-          }
-        >
-          {icon}
-        </div>
-
-      </div>
-
-      <p className="mt-4 text-2xl font-bold text-slate-900">
-        {value}
-      </p>
-
     </div>
   );
 }
 
-
-/* =========================================
-   ACTIVITY
-========================================= */
-
-function Activity({
-  title,
-  description,
-  time,
-}) {
+function StatCard({ title, value, icon }) {
   return (
-    <div className="flex gap-3">
-
-      <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-orange-500" />
-
-      <div className="min-w-0">
-
-        <p className="text-sm font-semibold text-slate-800">
-          {title}
-        </p>
-
-        <p className="mt-1 text-xs text-slate-500">
-          {description}
-        </p>
-
-        <p className="mt-1 text-[11px] text-slate-400">
-          {time}
-        </p>
-
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-slate-500">{title}</span>
+        <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
+          {icon}
+        </div>
       </div>
-
+      <div className="mt-4 flex items-baseline justify-between">
+        <span className="text-2xl font-bold text-slate-900">{value}</span>
+        <span className="text-xs font-semibold text-emerald-600 flex items-center gap-0.5">
+          +12% <ArrowUpRight className="w-3 h-3" />
+        </span>
+      </div>
     </div>
   );
 }
