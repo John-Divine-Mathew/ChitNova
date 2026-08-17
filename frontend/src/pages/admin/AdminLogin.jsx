@@ -16,15 +16,24 @@ export default function AdminLogin() {
     try {
       // Dynamic API URL for Laptop & Mobile connections
       const backendUrl = `http://${window.location.hostname}:5000/api/auth/login`;
-      
-      const res = await axios.post(backendUrl, formData);
 
-      // Safe property checking with Optional Chaining (?.) to avoid .length crashes
-      if (res?.data?.token || res?.data?.success) {
-        if (res?.data?.token) {
-          localStorage.setItem("adminToken", res.data.token);
+      const res = await axios.post(backendUrl, formData);
+      const adminData = res?.data?.data || {};
+
+      if (res?.data?.success || adminData?.token) {
+        const token = adminData?.token || res?.data?.token;
+        const storedAdmin = {
+          name: adminData?.name || "Admin User",
+          email: adminData?.email || formData.email,
+          role: adminData?.role || "Administrator",
+        };
+
+        if (token) {
+          localStorage.setItem("adminToken", token);
         }
-        // Successfully navigate to dashboard
+
+        localStorage.setItem("adminUser", JSON.stringify(storedAdmin));
+
         navigate("/admin/dashboard");
       } else {
         setErrorMsg(res?.data?.message || "Login failed. Invalid credentials.");
@@ -32,7 +41,6 @@ export default function AdminLogin() {
     } catch (err) {
       console.error("Login Error:", err);
 
-      // Safe error extraction avoiding .length on undefined
       const message =
         err.response?.data?.message ||
         err.response?.data?.error ||

@@ -10,7 +10,7 @@ export const getCollections = async (req, res) => {
       .populate("chitGroup", "groupName groupCode monthlyInstallment")
       .populate("collectedBy", "fullName agentCode")
       .populate("enrollment", "ticketNumber")
-      .sort({ collectionDate: -1 });
+      .sort({ collectionDate: -1, createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -37,10 +37,20 @@ export const createCollection = async (req, res) => {
       .populate("chitGroup");
 
     if (!enrollment) {
-      return res.status(404).json({ success: false, message: "Enrollment record not found" });
+      return res.status(404).json({ 
+        success: false, 
+        message: "Enrollment record not found" 
+      });
     }
 
-    // Auto-generate receipt number (e.g., REC-104928)
+    if (!enrollment.customer || !enrollment.chitGroup) {
+      return res.status(400).json({
+        success: false,
+        message: "The selected enrollment is missing customer or group reference data.",
+      });
+    }
+
+    // Auto-generate unique receipt number (e.g., REC-104928)
     const receiptNumber = `REC-${Math.floor(100000 + Math.random() * 900000)}`;
 
     const newCollection = await Collection.create({
@@ -50,15 +60,22 @@ export const createCollection = async (req, res) => {
       chitGroup: enrollment.chitGroup._id,
       collectedBy: collectedById || enrollment.assignedAgent || null,
       amountPaid: Number(amountPaid),
-      paymentMode,
-      transactionId,
-      remarks,
+      paymentMode: paymentMode || "Cash",
+      transactionId: transactionId || "",
+      remarks: remarks || "",
     });
+
+    // Populate the newly created document before returning to React
+    const populatedCollection = await Collection.findById(newCollection._id)
+      .populate("customer", "fullName customerCode phoneNumber")
+      .populate("chitGroup", "groupName groupCode monthlyInstallment")
+      .populate("collectedBy", "fullName agentCode")
+      .populate("enrollment", "ticketNumber");
 
     res.status(201).json({
       success: true,
       message: "Payment collection recorded successfully",
-      data: newCollection,
+      data: populatedCollection,
     });
   } catch (error) {
     res.status(400).json({
@@ -76,7 +93,10 @@ export const deleteCollection = async (req, res) => {
     const collection = await Collection.findById(req.params.id);
 
     if (!collection) {
-      return res.status(404).json({ success: false, message: "Collection record not found" });
+      return res.status(404).json({ 
+        success: false, 
+        message: "Collection record not found" 
+      });
     }
 
     await collection.deleteOne();

@@ -1,15 +1,11 @@
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   BarChart3,
-  Bell,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
-  FileText,
   Gavel,
   LayoutDashboard,
-  LogOut,
   Settings,
   UserPlus,
   Users,
@@ -24,21 +20,6 @@ export default function AdminSidebar({
   mobileOpen = false,
   setMobileOpen,
 }) {
-  const navigate = useNavigate();
-  const [confirmLogout, setConfirmLogout] = useState(false);
-
-  const handleLogoutConfirm = () => {
-    setConfirmLogout(false);
-    setMobileOpen(false);
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUser");
-    navigate("/admin/login");
-  };
-
-  const handleLogoutRequest = () => {
-    setConfirmLogout(true);
-  };
-
   return (
     <>
       {/* =========================================
@@ -197,16 +178,7 @@ export default function AdminSidebar({
         </nav>
 
         {/* BOTTOM SECTION */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 bg-white p-3 space-y-1">
-          <button
-            type="button"
-            onClick={handleLogoutRequest}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-rose-50 hover:text-rose-600"
-          >
-            <LogOut size={19} className="shrink-0" />
-            {!collapsed && <span className="truncate">Logout</span>}
-          </button>
-
+        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 bg-white p-3">
           <button
             type="button"
             onClick={() => setCollapsed(!collapsed)}
@@ -216,41 +188,6 @@ export default function AdminSidebar({
           </button>
         </div>
       </aside>
-
-      {confirmLogout && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/70 px-4 py-6">
-          <div className="w-full max-w-sm overflow-hidden rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="mb-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-600">
-                Confirm Logout
-              </p>
-              <h2 className="mt-3 text-lg font-semibold text-slate-900">
-                Are you sure you want to sign out?
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                You will be redirected to the login page and your current session will end.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-              <button
-                type="button"
-                onClick={() => setConfirmLogout(false)}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleLogoutConfirm}
-                className="rounded-xl bg-orange-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-700"
-              >
-                Sign out
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
